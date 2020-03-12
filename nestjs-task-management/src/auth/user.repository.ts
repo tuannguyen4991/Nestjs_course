@@ -11,12 +11,11 @@ export class UserRepository extends Repository<User> {
 
         const user = new User();
         user.username = username;
-        user.salt = await bcrypt.genSaltSync(10);
-        user.password = await UserRepository.hashPassword(password, user.salt);
-        
+        user.salt = await bcrypt.genSalt();
+        user.password = await this.hashPassword(password, user.salt);
+
         try {
-            await user.save();
-            console.log(user.password);
+           await user.save();
         } catch (err) {
             if(err.code === '23505') {
                 throw new ConflictException('Username already exist');
@@ -37,7 +36,7 @@ export class UserRepository extends Repository<User> {
         }
     }
 
-    private static async hashPassword(password: string, salt: string): Promise<string> {
+    private async hashPassword(password: string, salt: string): Promise<string> {
         return bcrypt.hash(password, salt);
     }
 }
