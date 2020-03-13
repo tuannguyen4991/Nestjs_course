@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe, NotFoundException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe, NotFoundException, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto'
 import { GetTasksFilterDto } from './dto/get-taks-filter.dto';
@@ -11,10 +11,14 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/auth/user.entity';
+import { GetUser } from 'src/auth/get-user.decorator';
 
 // @ApiBearerAuth()
 @ApiTags('tasks')
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
     constructor(private tasksService: TasksService) { }
 
@@ -24,8 +28,8 @@ export class TasksController {
         description: 'The found record',
         type: [Task]
     })
-    getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Promise<Task[]> {
-        return this.tasksService.getTasks(filterDto);
+    getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto, @GetUser() user: User, ): Promise<Task[]> {
+        return this.tasksService.getTasks(filterDto, user);
     }
 
     @Get('/:id')
@@ -42,8 +46,10 @@ export class TasksController {
     @ApiOperation({ summary: 'Create task' })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     @UsePipes(ValidationPipe)
-    createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-        return this.tasksService.createTask(createTaskDto);
+    createTask(@Body() createTaskDto: CreateTaskDto,
+        @GetUser() user: User,
+    ): Promise<Task> {
+        return this.tasksService.createTask(createTaskDto, user);
     }
 
     @Delete('/:id')
