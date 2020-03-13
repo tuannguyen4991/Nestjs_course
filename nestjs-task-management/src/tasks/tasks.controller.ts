@@ -38,8 +38,8 @@ export class TasksController {
         description: 'The found record',
         type: Task
     })
-    getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
-        return this.tasksService.getTaskById(id);
+    getTaskById(@Param('id', ParseIntPipe) id: number, @GetUser() user: User): Promise<Task> {
+        return this.tasksService.getTaskById(id, user);
     }
 
     @Post()
@@ -55,16 +55,17 @@ export class TasksController {
     @Delete('/:id')
     @ApiOperation({ summary: 'Delete task' })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    deleteTask(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.tasksService.deleteTask(id);
+    deleteTask(@Param('id', ParseIntPipe) id: number, @GetUser() user: User): Promise<void> {
+        return this.tasksService.deleteTask(id, user);
     }
 
     @Patch('/:id/status')
     updateTaskStatus(
         @Param('id', ParseIntPipe) id: number,
         @Body('status', TaskStatusValidationPipe) status: TaskStatus,
+        @GetUser() user: User,
     ): Promise<Task> {
-        return this.tasksService.updateTaskStatus(id, status);
+        return this.tasksService.updateTaskStatus(id, status, user);
     }
 }
 
