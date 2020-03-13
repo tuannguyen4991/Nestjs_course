@@ -11,6 +11,11 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
+  if (process.env.NODE_ENV = 'development') {
+    app.enableCors();
+
+  }
+
   const options = new DocumentBuilder()
     .setTitle('Todo App')
     .setDescription('The todo app API description')
