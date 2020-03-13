@@ -3,7 +3,7 @@ import { TaskStatus } from '../task-status.enum';
 import { IsOptional, IsIn, IsNotEmpty } from 'class-validator';
 
 export class GetTasksFilterDto {
-    @ApiProperty({ enum: ['Open', 'IN_PROGRESS', 'DONE'] })
+    @ApiProperty({ enum: ['OPEN', 'IN_PROGRESS', 'DONE'] })
     @IsOptional()
     @IsIn([TaskStatus.OPEN, TaskStatus.IN_PROGRESS, TaskStatus.DONE])
     status: TaskStatus;

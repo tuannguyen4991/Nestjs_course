@@ -2,9 +2,19 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { TasksModule } from './tasks/tasks.module';
+import { Logger } from '@nestjs/common';
+import * as config from 'config';
 
 async function bootstrap() {
+  const serverConfig = config.get('server');
+  const logger = new Logger('bootstrap')
+
   const app = await NestFactory.create(AppModule);
+
+  if (process.env.NODE_ENV = 'development') {
+    app.enableCors();
+
+  }
 
   const options = new DocumentBuilder()
     .setTitle('Todo App')
@@ -19,6 +29,8 @@ async function bootstrap() {
   });
   SwaggerModule.setup('swagger/tasks', app, document);
 
-  await app.listen(3000);
+  const port = process.env.PORT || serverConfig.port;
+  await app.listen(port);
+  logger.log(`Application listening on ${port} `);
 }
 bootstrap();
